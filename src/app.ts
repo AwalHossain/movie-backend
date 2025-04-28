@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Express, NextFunction, Request, Response } from "express";
 
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./routes";
@@ -9,11 +10,14 @@ import { getDbStatusText } from "./utils/common";
 const app: Express = express();
 
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow only this origin
+  credentials: true, // Allow credentials
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(cookieParser());
 
 
 // health check

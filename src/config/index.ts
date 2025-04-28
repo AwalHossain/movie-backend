@@ -7,8 +7,12 @@ dotenv.config({
 
 export default {
   env: process.env.NODE_ENV || "development",
-  port: process.env.PORT_API_SERVER,
+  port: process.env.PORT,
   mongoURI: process.env.MONGO_URI,
-  jwtSecret: process.env.JWT_SECRET,
-  
+  jwt: {
+    accessSecret: process.env.JWT_ACCESS_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
+    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+  },
 };

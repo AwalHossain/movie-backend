@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
-import config from './config';
+import config from './index';
 
 const connectDB = async () => {
   try {
-    const mongoURI = config.mongoUrl; // Get URI from environment variables
+    const mongoURI = config.mongoURI; // Get URI from environment variables
     if (!mongoURI) {
         console.error('MONGO_URI not defined in environment variables.');
         process.exit(1);
