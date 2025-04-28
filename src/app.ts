@@ -3,9 +3,6 @@ import express, { Express, NextFunction, Request, Response } from "express";
 
 import mongoose from "mongoose";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
-import validateRequest from "./app/middlewares/validateRequest";
-import { UrlController } from "./app/modules/url/url.controller";
-import { UrlValidation } from "./app/modules/url/url.validation";
 import router from "./routes";
 import { sendResponse } from "./shared/sendResponse";
 import { getDbStatusText } from "./utils/common";
@@ -44,12 +41,6 @@ app.get("/health", (_req: Request, res: Response) => {
 
 
 
-// Add the root-level redirect route
-app.get(
-  "/:shortId",
-  validateRequest(UrlValidation.redirectToUrlSchema),
-  UrlController.redirectToUrl
-);
 
 app.use(`/api/v1`, router);
 app.use(globalErrorHandler);

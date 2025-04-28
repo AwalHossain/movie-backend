@@ -5,8 +5,8 @@ dotenv.config();
 import http from "http";
 import app from "./app";
 
-import config from "./config/config";
 import connectDB from "./config/db";
+import config from "./config/index";
 import { errorLogger, logger } from "./shared/logger";
 
 const PORT = Number(config.port) || 8001;
