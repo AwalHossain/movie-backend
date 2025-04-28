@@ -1,0 +1,17 @@
+.vercel
+app/
+node_modules/
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+dist/
+
+
+coverage/
+
+logs/
+
+

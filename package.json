@@ -1,0 +1,47 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.ts",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "test:watch": "cross-env NODE_ENV=test jest --watch --detectOpenHandles",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --detectOpenHandles",
+    "test:integration": "cross-env NODE_ENV=test jest --testNamePattern=\\.integration\\.test\\.ts --detectOpenHandles"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "http-status": "^2.1.0",
+    "mongoose": "^8.13.2",
+    "nanoid": "^5.1.5",
+    "validator": "^13.15.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jest": "^29.5.14",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.14.1",
+    "@types/supertest": "^6.0.3",
+    "@types/valid-url": "^1.0.7",
+    "@types/validator": "^13.15.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.2",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
