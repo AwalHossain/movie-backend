@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import config from "../../config/config";
+import config from "../../config/index";
 import { AppError } from "../../error/appError";
 import handleCastError from "../../error/handleCastError";
 import handleValidationError from "../../error/handleValidationError";
