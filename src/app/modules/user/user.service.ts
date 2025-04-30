@@ -13,6 +13,9 @@ const register = async (data: IUser) => {
   if (result) {
     throw new AppError("Email already exists", httpStatus.BAD_REQUEST);
   }
+  if (data.password === "" || data.password === null || data.password.length < 6) {
+    throw new AppError("Password is required and must be at least 6 characters long", httpStatus.BAD_REQUEST);
+  }
 
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(data.password, saltRounds);

@@ -11,6 +11,7 @@ const router = express.Router();
 router.post("/register", UserController.registrationUser);
 router.post("/login", UserController.loginUser);
 router.post("/refresh-token", UserController.refreshToken);
+router.get("/user/:id", UserController.getUserById);
 
 router.get(
   "/google",
