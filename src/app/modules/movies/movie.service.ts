@@ -1,6 +1,8 @@
 import httpStatus from "http-status";
 import { SortOrder } from "mongoose";
 import { AppError } from "../../../error/appError";
+import { io } from "../../../server";
+import { emitNewMovie } from "../../../socket";
 import { IMovie, IMovieFilters, IMoviePaginationOptions, IMovies } from "./movie.interface";
 import { Movie } from "./movie.model"; // Correct path
 
@@ -9,6 +11,9 @@ const addMovie = async (data: Partial<IMovie>): Promise<IMovie> => {
   if (!data.title) {
     throw new AppError("Movie title is required", httpStatus.BAD_REQUEST);
   }
+  console.log("data for adding movie", data);
+  if (data.poster === "") data.poster = undefined as any;
+  if (data.backdrop === "") data.backdrop = undefined as any;
 
 
   // Create the movie
@@ -16,30 +21,39 @@ const addMovie = async (data: Partial<IMovie>): Promise<IMovie> => {
   if (!newMovie) {
     throw new AppError("Failed to add movie", httpStatus.INTERNAL_SERVER_ERROR);
   }
+
+  // Emit real-time event - new movie added
+  try {
+    emitNewMovie(io, newMovie.toObject()); // Convert to plain object to avoid Mongoose document issues
+  } catch (error) {
+    // Don't fail the API if socket emission fails, just log it
+    console.log('Socket emission error:', error);
+  }
+
   return newMovie;
 };
 
 const getAllMovies = async (filters: IMovieFilters, paginationOptions: IMoviePaginationOptions): Promise<IMovies> => {
   // Add sorting, pagination, filtering later as needed
-  const {searchTerm, ...filtersData} = filters;
-  const {page, skip, limit, sortBy, sortOrder} = paginationOptions;
+  const { searchTerm, ...filtersData } = filters;
+  const { page, skip, limit, sortBy, sortOrder } = paginationOptions;
 
   const andConditions = [];
 
   if (searchTerm) {
     andConditions.push({
       $or: [
-        {title: {$regex: searchTerm, $options: "i"}},
-        {overview: {$regex: searchTerm, $options: "i"}},
+        { title: { $regex: searchTerm, $options: "i" } },
+        { overview: { $regex: searchTerm, $options: "i" } },
       ],
     });
   }
 
-  if(Object.keys(filtersData).length > 0) {
-    Object.entries(filtersData).map(([key,value])=>{
-      if(Array.isArray(value)) {
+  if (Object.keys(filtersData).length > 0) {
+    Object.entries(filtersData).map(([key, value]) => {
+      if (Array.isArray(value)) {
         andConditions.push({
-          [key]: {$in: value}
+          [key]: { $in: value }
         })
       } else {
         andConditions.push({
@@ -49,17 +63,18 @@ const getAllMovies = async (filters: IMovieFilters, paginationOptions: IMoviePag
     })
   }
 
-  const sortConditions: {[key: string]: SortOrder} = {};
-  if(sortBy && sortOrder) {
+  const sortConditions: { [key: string]: SortOrder } = {};
+  if (sortBy && sortOrder) {
     sortConditions[sortBy] = sortOrder as SortOrder;
   }
 
-  const whereConditions = andConditions.length > 0 ? {$and: andConditions} : {};
+  const whereConditions = andConditions.length > 0 ? { $and: andConditions } : {};
 
   const movies = await Movie.find(whereConditions)
     .sort(sortConditions)
     .skip(skip || 0)
-    .limit(limit || 10);
+    .limit(limit || 10)
+    .select("title poster rating genres release_date")
 
   const total = await Movie.countDocuments(whereConditions);
 
@@ -81,16 +96,6 @@ const getMovieById = async (id: string): Promise<IMovie> => {
   return movie;
 };
 
-// Find movie by TMDB ID
-const getMovieByTmdbId = async (tmdbId: number): Promise<IMovie> => {
-  const movie = await Movie.findOne({ tmdb_id: tmdbId });
-  if (!movie) {
-    throw new AppError(`Movie with TMDB ID ${tmdbId} not found`, httpStatus.NOT_FOUND);
-  }
-  return movie;
-};
-
-
 const deleteMovieById = async (id: string): Promise<IMovie> => {
   const deletedMovie = await Movie.findByIdAndDelete(id);
   if (!deletedMovie) {
@@ -109,10 +114,9 @@ const deleteMovieById = async (id: string): Promise<IMovie> => {
 // };
 
 export const MovieService = {
-  addMovie,          // Renamed from createMovie for clarity
+  addMovie,
   getAllMovies,
-  getMovieById,      // Get by MongoDB _id
-  getMovieByTmdbId,  // Get by TMDB ID
+  getMovieById,
   deleteMovieById,
   // updateMovieById, // Uncomment when implemented
 };
