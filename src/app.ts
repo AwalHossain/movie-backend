@@ -2,21 +2,27 @@ import cors from "cors";
 import express, { Express, NextFunction, Request, Response } from "express";
 
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 import mongoose from "mongoose";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
-import config from "./config";
 import router from "./routes";
 import { sendResponse } from "./shared/sendResponse";
 import { getDbStatusText } from "./utils/common";
 
+dotenv.config();
+
 const app: Express = express();
 
 
-const originUrl = ['http://localhost:3000', config.clientUrl!]
 app.use(cors({
-  origin: originUrl, // Allow only this origin
-  credentials: true, // Allow credentials
+  origin: process.env.CLIENT_URL!,
+  credentials: true,
 }));
+console.log(process.env.CLIENT_URL, "client url");
+
+if (!process.env.CLIENT_URL) {
+  throw new Error("CLIENT_URL is not defined");
+}
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
