@@ -4,14 +4,17 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import config from "./config";
 import router from "./routes";
 import { sendResponse } from "./shared/sendResponse";
 import { getDbStatusText } from "./utils/common";
+
 const app: Express = express();
 
 
+const originUrl = ['http://localhost:3000', config.clientUrl!]
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow only this origin
+  origin: originUrl, // Allow only this origin
   credentials: true, // Allow credentials
 }));
 
