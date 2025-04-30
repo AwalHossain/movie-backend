@@ -10,6 +10,7 @@ export interface IMovieFilters {
   searchTerm?: string;
   sourceCategory?: string;
   genre?: string;
+  title?: string;
 }
 
 
@@ -37,7 +38,7 @@ export interface IMovie {
   vote_count?: number | null;
   cast: ICastMember[];
   popularity?: number | null;
-  sourceCategory?: string | null;
+  source_category?: string | null;
   averageUserRating?: number | null;
   userReviewCount?: number | null;
   createdAt?: Date;

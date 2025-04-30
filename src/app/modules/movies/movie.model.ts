@@ -32,7 +32,7 @@ const movieSchema = new Schema<IMovie>(
     },
     rating: {
       type: Number,
-      default: 0,
+      default: 5,
     },
     vote_count: {
       type: Number,
@@ -45,7 +45,7 @@ const movieSchema = new Schema<IMovie>(
     genres: {
       type: [String],
       trim: true,
-      default: [],
+      default: ["Drama"],
     },
     poster: {
       type: String,
@@ -72,7 +72,7 @@ const movieSchema = new Schema<IMovie>(
       type: Number,
       default: 0,
     },
-    sourceCategory: {
+    source_category: {
       type: String,
       trim: true,
       index: true,

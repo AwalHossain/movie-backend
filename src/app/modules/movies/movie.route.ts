@@ -13,7 +13,6 @@ router.post(
 
 router.get("/", MovieController.getAllMovies);
 router.get("/id/:id", MovieController.getMovieById);
-router.get("/tmdb/:tmdbId", MovieController.getMovieByTmdbId);
 
 router.delete(
   "/:id",
