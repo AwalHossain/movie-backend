@@ -18,7 +18,7 @@ const addMovie = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllMovies = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ['searchTerm', 'sourceCategory']);
+  const filters = pick(req.query, ['searchTerm', 'source_category', 'genres', 'title']);
   const paginationOptions = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
   console.log("filters", filters);
   console.log("paginationOptions", paginationOptions);
@@ -32,7 +32,11 @@ const getAllMovies = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMovieById = catchAsync(async (req: Request, res: Response) => {
-  const result = await MovieService.getMovieById(req.params.id);
+  const id = req.params.id;
+  if (!id) {
+    throw new AppError("Movie ID is required", httpStatus.BAD_REQUEST);
+  }
+  const result = await MovieService.getMovieById(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -41,19 +45,7 @@ const getMovieById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getMovieByTmdbId = catchAsync(async (req: Request, res: Response) => {
-  const tmdbId = parseInt(req.params.tmdbId, 10);
-  if (isNaN(tmdbId)) {
-    throw new AppError("Invalid TMDB ID provided", httpStatus.BAD_REQUEST);
-  }
-  const result = await MovieService.getMovieByTmdbId(tmdbId);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Movie retrieved successfully by TMDB ID!",
-    data: result,
-  });
-});
+
 
 const deleteMovieById = catchAsync(async (req: Request, res: Response) => {
   const result = await MovieService.deleteMovieById(req.params.id);
@@ -70,6 +62,5 @@ export const MovieController = {
   addMovie,
   getAllMovies,
   getMovieById,
-  getMovieByTmdbId,
   deleteMovieById,
 };

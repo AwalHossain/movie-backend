@@ -5,8 +5,8 @@ import { AppError } from "../../error/appError";
 import { verifyAccessToken } from "../../utils/common";
 
 interface AuthenticatedUser extends JwtPayload {
-  id: string;
-  role: string;
+    id: string;
+    role: string;
 }
 
 const isAuthenticated = (req: Request, _res: Response, next: NextFunction) => {
