@@ -24,9 +24,14 @@ async function bootstrap() {
     server = http.createServer(app);
 
     // Initialize Socket.IO
+    const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:5500"];
+    if (config.clientUrl) {
+      allowedOrigins.push(config.clientUrl);
+    }
+
     io = new Server(server, {
       cors: {
-        origin: ["http://localhost:3000", "http://127.0.0.1:5500"], // Match your frontend URL
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true
       }
