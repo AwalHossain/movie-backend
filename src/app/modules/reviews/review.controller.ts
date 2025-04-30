@@ -8,10 +8,11 @@ import { ReviewService } from './review.service';
 
 
 const addReview = catchAsyncError(async (req: Request, res: Response) => {
- 
-  const userId = (req.user as any)?._id; 
+
+  const userId = (req.user as any)?.id;
+  console.log(req.user, "userId");
   if (!userId) {
-      throw new AppError('User not authenticated', httpStatus.UNAUTHORIZED);
+    throw new AppError('User not authenticated', httpStatus.UNAUTHORIZED);
   }
 
   const reviewData = req.body;
