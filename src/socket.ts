@@ -44,10 +44,10 @@ export const initSocketServer = (io: Server<ClientToServerEvents, ServerToClient
         });
 
         // Handle movie addition
-        socket.on('movie:new', (data) => {
-            logger.info(`New movie added: ${data.title}`);
-            io.emit('movie:added', data);
-        });
+        // socket.on('movie:new', (data) => {
+        //     logger.info(`New movie added: ${data.title}`);
+        //     io.emit('movie:added', data);
+        // });
 
         // Handle disconnection
         socket.on('disconnect', () => {

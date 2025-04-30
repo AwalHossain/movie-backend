@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { JwtPayload } from 'jsonwebtoken';
 import { AppError } from "../../error/appError";
-import { verifyAccessToken } from "../../utils/common";
+import { verifyAccessToken, verifyRefreshToken } from "../../utils/common";
 
 interface AuthenticatedUser extends JwtPayload {
     id: string;
@@ -12,32 +12,32 @@ interface AuthenticatedUser extends JwtPayload {
 const isAuthenticated = (req: Request, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const refreshToken = req.cookies?.refreshToken;
-    let token: string | null = null;
 
-    console.log("Authorization Header:", authHeader);
-    console.log("Refresh Token Cookie:", refreshToken);
-    console.log("Request Headers:", req.headers);
-
+    // Try access token first (preferred method)
     if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.split(' ')[1];
-    } else if (refreshToken) {
-        token = refreshToken;
+        const token = authHeader.split(' ')[1];
+        try {
+            const decoded = verifyAccessToken(token) as AuthenticatedUser;
+            req.user = decoded;
+            return next();
+        } catch (error) {
+            console.log("Access token verification failed, trying refresh token...");
+        }
     }
 
-    if (!token) {
-        return next(new AppError("Authorization token missing", httpStatus.UNAUTHORIZED));
+    // If access token failed or wasn't provided, try refresh token
+    if (refreshToken) {
+        try {
+            const decoded = verifyRefreshToken(refreshToken) as AuthenticatedUser;
+            req.user = decoded;
+            return next();
+        } catch (error) {
+            console.error("Refresh token verification failed:", error);
+            return next(new AppError("Invalid or expired tokens", httpStatus.UNAUTHORIZED));
+        }
     }
 
-    try {
-        const decoded = verifyAccessToken(token) as AuthenticatedUser;
-
-        req.user = decoded;
-        next();
-
-    } catch (error) {
-        console.error("Token verification failed in middleware:", error);
-        return next(new AppError("Invalid or expired token", httpStatus.UNAUTHORIZED));
-    }
+    return next(new AppError("Authentication required", httpStatus.UNAUTHORIZED));
 };
 
 export default isAuthenticated;
